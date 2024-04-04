@@ -19,13 +19,11 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB limit for file size
 # Database configuration
 database_url = os.getenv('DATABASE_URL')
 ssl_cert_path = 'root.crt'  # since root.crt is in the same directory as app.py
-if database_url:
-    # Replace with PostgreSQL scheme for SQLAlchemy compatibility
-    database_url = database_url.replace('cockroachdb://', 'postgresql://')
 
-    # Append SSL parameters if not already present
+if database_url:
     if 'sslmode' not in database_url:
         database_url += f"?sslmode=verify-full&sslrootcert={ssl_cert_path}"
+    database_url = database_url.replace('postgresql://', 'cockroachdb://', 1)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = database_url
 
@@ -229,4 +227,3 @@ if __name__ == '__main__':
         db.create_all()
         insert_audio_files()
     app.run(debug=True)
-
